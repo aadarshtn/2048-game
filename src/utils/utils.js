@@ -89,8 +89,9 @@ export const GridElement = styled.h2((props) => ({
     justifyContent: "center",
     width: "56px",
     height: "54px",
+    color: props.value > 4 ? "#EEEEEE" : "#786E65",
     backgroundColor: props.bgColor ? props.bgColor : "rgba(255, 255, 255, 0.8)",
-    fontSize: "20px",
+    fontSize: props.value >  512 ? "16px" : props.value > 64 ? "20px" : "22px",
     margin: "0px",
     boxShadow: props.bgColor === "#CDC1B5" ? "" : "0px 1px 3px rgba(0, 0, 0, 0.25)",
 }));

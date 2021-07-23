@@ -26,7 +26,13 @@ export default function GameBody({boardState}) {
 
     return (
         <GridLayout>
-            {boardArray.map((value, index) => <GridElement key={index} bgColor={findTileBgColor(value)}>{value !== "0" ? value : ""}</GridElement>)}
+            {boardArray.map((value, index) => <GridElement 
+                                                key={index}
+                                                bgColor={findTileBgColor(value)}
+                                                value={value}
+                                            >
+                                                {value !== "0" ? value : ""}
+                                            </GridElement>)}
         </GridLayout>
     )
 }
