@@ -1,18 +1,18 @@
 import React from 'react';
-import { FlexBoxLayout } from './utils/layouts';
 import {
+    FlexBoxLayout,
     ReplayButton,
     UndoButton,
     RedoButton,
     ControlsWrapper
-} from './utils/buttons';
-import GameDisplay from './GameDisplay';
+} from './utils';
+import Game from './Game';
 
 export const GameBoard = () => {
     return(
         <FlexBoxLayout bgColor="#765F8B" w="611px" h="587px" fd="column" minw="611px" minh="587px">
-            <GameDisplay />
-            <ControlsWrapper childrenArray={[<UndoButton/>,<ReplayButton />,<RedoButton />]} />
+            <Game />
+            <ControlsWrapper childrenArray={[<UndoButton key="undo"/>,<ReplayButton key="replay"/>,<RedoButton key="redo"/>]} />
         </FlexBoxLayout>
     )
 }

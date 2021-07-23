@@ -49,3 +49,61 @@ export const ControlsWrapper = (props) => {
         </StyledWrapperDiv>
     )
 }
+
+export const FlexBoxLayout = styled.div((props) => ({
+    // Common layout property
+    display: "flex",
+
+    // Variable layout properties
+    position: props.p || "relative",
+    flexDirection: props.fd || "row",
+    justifyContent: props.jc || "",
+    alignItems: props.ai || "",
+    backgroundColor: props.bgColor || "",
+    height: props.h || "",
+    width: props.w || "",
+    minWidth: props.minw || "",
+    minHeight: props.minh || "",
+    margin: props.m || "",
+    padding: props.p || "",
+}));
+
+export const GridLayout = styled.div((props) => ({
+    // Common layout property
+    display: "grid",
+
+    // Variable layout properties
+    gridTemplateColumns: "auto auto auto auto",
+    width: "250px",
+    maxHeight: "250px",
+    backgroundColor: "#BCAD9D",
+    padding: "7px 7px 7px 7px",
+    gap: '7px',
+    textAlign: 'center',
+    verticalAlign: 'middle'
+}));
+
+export const GridElement = styled.h2`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 54px;
+    background-color: rgba(255, 255, 255, 0.8);
+    font-size: 20px;
+    margin: 0px;
+    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
+`;
+
+export const Text = styled.p((props) => ({
+    fontSize: props.fs || "",
+    fontWeight: props.fw || "",
+    letterSpacing: props.ls || "",
+    color: props.c || "#000",
+    margin: "0px",
+    textAlign: props.ta || "start",
+    width: props.w || "",
+    height: props.h || "inherit",
+    backgroundColor: props.bgColor || "",
+    lineHeight: "inherit"
+}));
