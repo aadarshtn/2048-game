@@ -30,7 +30,6 @@ function Game() {
         let randomIndex = Math.floor(Math.random() * (board.length));
         if(checkLost()) return;
         if(board[randomIndex] === 0) {
-            console.log("NOT_LOST")
             board[randomIndex] = 2;
             setBoardState(JSON.stringify(board));
             // An Additional checkLost() needs to run here to handle an edge case
@@ -205,8 +204,6 @@ function Game() {
             combineRow(boardSimulationCopy);
             rightMove(boardSimulationCopy);
             currBoard = JSON.stringify(boardSimulationCopy);
-            console.log("BOARD_BEFORE_SIMULATING_RIGHT", prevBoard);
-            console.log("BOARD_AFTER_SIMULATING_RIGHT", currBoard);
 
             if(prevBoard === currBoard) {
                 boardSimulationCopy = [...board];
@@ -215,8 +212,6 @@ function Game() {
                 combineRow(boardSimulationCopy);
                 leftMove(boardSimulationCopy);
                 currBoard = JSON.stringify(boardSimulationCopy);
-                console.log("BOARD_BEFORE_SIMULATING_LEFT", prevBoard);
-                console.log("BOARD_AFTER_SIMULATING_LEFT", currBoard);
 
                 if(prevBoard === currBoard) {
                     boardSimulationCopy = [...board];
@@ -225,8 +220,6 @@ function Game() {
                     combineColumn(boardSimulationCopy);
                     upMove(boardSimulationCopy);
                     currBoard = JSON.stringify(boardSimulationCopy);
-                    console.log("BOARD_BEFORE_SIMULATING_UP", prevBoard);
-                    console.log("BOARD_AFTER_SIMULATING_UP", currBoard);
 
                     if(prevBoard === currBoard){
                         boardSimulationCopy = [...board];
@@ -235,12 +228,9 @@ function Game() {
                         combineColumn(boardSimulationCopy);
                         downMove(boardSimulationCopy);
                         currBoard = JSON.stringify(boardSimulationCopy);
-                        console.log("BOARD_BEFORE_SIMULATING_DOWN", prevBoard);
-                        console.log("BOARD_AFTER_SIMULATING_DOWN", currBoard);
 
                         if(prevBoard === currBoard) {
                             document.removeEventListener('keyup', handleMove);
-                            console.log("EVENT_LISTENER_REMOVED");
                             return true;
                         }
                     }
