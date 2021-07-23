@@ -16,7 +16,6 @@ export default function GameBody({boardState}) {
     boardArray[boardArray.length - 1] = lastChar;
 
     const findTileBgColor = (value) => {
-        console.log(value, value in TILE_COLORS);
         if(value in TILE_COLORS) {
             return TILE_COLORS[value.toString()];
         } else {

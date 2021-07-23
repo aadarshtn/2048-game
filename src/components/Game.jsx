@@ -40,24 +40,54 @@ function Game() {
 
     // Function to : Generate Number Two At Two random positions
     const generateDoubleTwo = () => {
-        let firstRandomIndex = Math.floor(Math.random() * (board.length - 1));
-        let secondRandomIndex = -1;
-        while(secondRandomIndex === -1 || secondRandomIndex === firstRandomIndex) {
-            secondRandomIndex = Math.floor(Math.random() * (board.length - 1));
+
+        let zeroesCount = 0;
+        for(let i = 0; i < board.length; i++) {
+            if(board[i] === 0) {
+                zeroesCount += 1;
+            }
         }
-        if(board[firstRandomIndex] === 0 && board[secondRandomIndex] === 0) {
-            board[firstRandomIndex] = 2;
-            board[secondRandomIndex] = 2;
-            setBoardState(JSON.stringify(board));
-        } else generateDoubleTwo();
+
+        if(zeroesCount >= 2) {
+            let firstRandomIndex = Math.floor(Math.random() * (board.length - 1));
+            let secondRandomIndex = -1;
+            while(secondRandomIndex === -1 || secondRandomIndex === firstRandomIndex) {
+                secondRandomIndex = Math.floor(Math.random() * (board.length - 1));
+            }
+            if(board[firstRandomIndex] === 0 && board[secondRandomIndex] === 0) {
+                board[firstRandomIndex] = 2;
+                board[secondRandomIndex] = 2;
+                setBoardState(JSON.stringify(board));
+            } else generateDoubleTwo();
+        }        
     }
 
     // Initialise board with two two's --- Note: This code runs only once in a game life cycle
-    // TODO - Handle reload
     useEffect(() => {
-        generateDoubleTwo();
-        document.addEventListener('keyup', handleMove);
 
+        // Retrieve the state before reload from localStorage --- String Format
+        const localBoard = window.localStorage.getItem('board');
+        updatedCurrScore = parseInt(window.localStorage.getItem('2048currScore')) ? parseInt(window.localStorage.getItem('2048currScore')) : 0;
+        updatedBestScore = parseInt(window.localStorage.getItem('2048bestScore')) ? parseInt(window.localStorage.getItem('2048bestScore')) : 0;
+        setCurrScore(updatedCurrScore);
+        setBestScore(updatedBestScore);
+
+        // Convert String Back To Array Format
+        const boardArray = localBoard ? localBoard.split(",") : [];
+
+        // Populating board Array with values before reolad
+        for(let i = 0; i < boardArray.length; i++){
+            board[i] = parseInt(boardArray[i]);
+        }
+
+        setBoardState(JSON.stringify(board));
+
+        if(!localBoard) {
+            generateDoubleTwo();
+        }
+        
+        window.localStorage.setItem('board', board);
+        document.addEventListener('keyup', handleMove);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
@@ -110,9 +140,11 @@ function Game() {
                 board[i + 1] = 0;
                 updatedCurrScore += combinedTotal;
                 setCurrScore(score => (score + combinedTotal));
+                window.localStorage.setItem('2048currScore', updatedCurrScore);
                 if(updatedCurrScore > updatedBestScore) {
-                    updatedBestScore += combinedTotal;
-                    setBestScore(score => (score + combinedTotal));
+                    updatedBestScore = updatedCurrScore;
+                    setBestScore(updatedBestScore);
+                    window.localStorage.setItem('2048bestScore', updatedBestScore)
                 }
             }
         }
@@ -165,9 +197,11 @@ function Game() {
                 board[i + 4] = 0;
                 updatedCurrScore += combinedTotal;
                 setCurrScore(score => (score + combinedTotal));
+                window.localStorage.setItem('2048currScore', updatedCurrScore);
                 if(updatedCurrScore > updatedBestScore) {
-                    updatedBestScore += combinedTotal;
-                    setBestScore(score => (score + combinedTotal));
+                    updatedBestScore = updatedCurrScore;
+                    setBestScore(updatedBestScore);
+                    window.localStorage.setItem('2048bestScore', updatedBestScore);
                 }
             }
         }
@@ -250,6 +284,7 @@ function Game() {
                 rightMove(board);
                 currBoard = JSON.stringify(board);
                 if(prevBoard !== currBoard) generateSingleTwo();
+                window.localStorage.setItem('board', board);
                 break;
             case "ArrowLeft":
                 leftMove(board);
@@ -257,6 +292,7 @@ function Game() {
                 leftMove(board);
                 currBoard = JSON.stringify(board);
                 if(prevBoard !== currBoard) generateSingleTwo();
+                window.localStorage.setItem('board', board);
                 break;
             case "ArrowUp":
                 upMove(board);
@@ -264,6 +300,7 @@ function Game() {
                 upMove(board);
                 currBoard = JSON.stringify(board);
                 if(prevBoard !== currBoard) generateSingleTwo();
+                window.localStorage.setItem('board', board);
                 break;
             case "ArrowDown":
                 downMove(board);
@@ -271,6 +308,7 @@ function Game() {
                 downMove(board);
                 currBoard = JSON.stringify(board);
                 if(prevBoard !== currBoard) generateSingleTwo();
+                window.localStorage.setItem('board', board);
                 break;
             default:
                 break;
