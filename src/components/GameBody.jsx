@@ -1,5 +1,5 @@
 import React from 'react';
-import { GridLayout, GridElement } from './utils';
+import { GridLayout, GridElement } from '../utils/utils';
 
 export default function GameBody({boardState}) {
 

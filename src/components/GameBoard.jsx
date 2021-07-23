@@ -5,7 +5,7 @@ import {
     UndoButton,
     RedoButton,
     ControlsWrapper
-} from './utils';
+} from '../utils/utils';
 import Game from './Game';
 
 export const GameBoard = () => {

@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { 
     FlexBoxLayout,
     Text,
- } from './utils';
+ } from '../utils/utils';
 
 const HeaderWrapper = styled(FlexBoxLayout)({
     flexDirection: "column",
