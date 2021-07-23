@@ -1,5 +1,6 @@
 import React from 'react';
 import { GridLayout, GridElement } from '../utils/utils';
+import { TILE_COLORS } from '../utils/const';
 
 export default function GameBody({boardState}) {
 
@@ -14,10 +15,18 @@ export default function GameBody({boardState}) {
     boardArray[0] = firstChar;
     boardArray[boardArray.length - 1] = lastChar;
 
-    
+    const findTileBgColor = (value) => {
+        console.log(value, value in TILE_COLORS);
+        if(value in TILE_COLORS) {
+            return TILE_COLORS[value.toString()];
+        } else {
+            return "#7E7E7E";
+        }
+    }
+
     return (
         <GridLayout>
-            {boardArray.map((value, index) => <GridElement key={index}>{value !== "0" ? value : ""}</GridElement>)}
+            {boardArray.map((value, index) => <GridElement key={index} bgColor={findTileBgColor(value)}>{value !== "0" ? value : ""}</GridElement>)}
         </GridLayout>
     )
 }

@@ -83,17 +83,17 @@ export const GridLayout = styled.div((props) => ({
     verticalAlign: 'middle'
 }));
 
-export const GridElement = styled.h2`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 56px;
-    height: 54px;
-    background-color: rgba(255, 255, 255, 0.8);
-    font-size: 20px;
-    margin: 0px;
-    box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.25);
-`;
+export const GridElement = styled.h2((props) => ({
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    width: "56px",
+    height: "54px",
+    backgroundColor: props.bgColor ? props.bgColor : "rgba(255, 255, 255, 0.8)",
+    fontSize: "20px",
+    margin: "0px",
+    boxShadow: props.bgColor === "#CDC1B5" ? "" : "0px 1px 3px rgba(0, 0, 0, 0.25)",
+}));
 
 export const Text = styled.p((props) => ({
     fontSize: props.fs || "",
