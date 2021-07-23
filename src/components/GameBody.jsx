@@ -2,14 +2,22 @@ import React from 'react';
 import { GridLayout, GridElement } from './utils';
 
 export default function GameBody({boardState}) {
-    const array = boardState.split(",");
-    const firstChar = array[0].substr(1, array[0].length);
-    const lastChar = array[array.length - 1].substr(0, array[array.length - 1].length - 1);
-    array[0] = firstChar;
-    array[array.length - 1] = lastChar;
+
+    // available boardState = "[x,x,x,x,x,x,x,x,x,x,x,x]"
+    // required Array Format = [x,x,x,x,x,x,x,x,x,x,x,x]
+    // Creating an array out of string type board State
+    const boardArray = boardState.split(",");
+
+    // Removing the first and last square brackets
+    const firstChar = boardArray[0].substr(1, boardArray[0].length);
+    const lastChar = boardArray[boardArray.length - 1].substr(0, boardArray[boardArray.length - 1].length - 1);
+    boardArray[0] = firstChar;
+    boardArray[boardArray.length - 1] = lastChar;
+
+    
     return (
         <GridLayout>
-            {array.map((value, index) => <GridElement key={index}>{value !== "0" ? value : ""}</GridElement>)}
+            {boardArray.map((value, index) => <GridElement key={index}>{value !== "0" ? value : ""}</GridElement>)}
         </GridLayout>
     )
 }
