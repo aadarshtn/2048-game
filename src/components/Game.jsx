@@ -23,7 +23,7 @@ function Game() {
     const [bestScore, setBestScore] = useState(0);
 
     let updatedCurrScore = 0;
-    let updatedBestScore = 0;
+    let updatedBestScore = bestScore;
 
     // Function to : Generate Number Two At One random positions
     const generateSingleTwo = () => {
