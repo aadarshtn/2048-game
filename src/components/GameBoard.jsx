@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
     FlexBoxLayout,
     ReplayButton,
@@ -9,10 +9,30 @@ import {
 import Game from './Game';
 
 export const GameBoard = () => {
+
+    const [undoButtonClicked, setUndoButtonClicked] = useState(false);
+    const [undoButtonActive, setUndoButtonActive] = useState(false);
+
+    const handleUndoClick = () => {
+        setUndoButtonClicked(true);
+    }
+
     return(
         <FlexBoxLayout bgColor="#765F8B" w="611px" h="587px" fd="column" minw="611px" minh="587px">
-            <Game />
-            <ControlsWrapper childrenArray={[<UndoButton key="undo"/>,<ReplayButton key="replay"/>,<RedoButton key="redo"/>]} />
+            <Game
+                undoClick={undoButtonClicked}
+                setUndoClick={setUndoButtonClicked}
+                setUndoButtonActive={setUndoButtonActive}
+            />
+            <ControlsWrapper
+                childrenArray={
+                    [
+                        <UndoButton key="undo" handleClick={handleUndoClick} active={undoButtonActive}/>,
+                        <ReplayButton key="replay"/>,
+                        <RedoButton key="redo"/>
+                    ]
+                }
+            />
         </FlexBoxLayout>
     )
 }

@@ -14,13 +14,17 @@ const ResponsiveDisplayDiv = styled.div`
 
 
 // ------------- Exported Component --------------- //
-function Game() {
+function Game({undoClick, setUndoClick, setUndoButtonActive}) {
 
     // States
-    const board = new Array(16).fill(0);
+    const [board, setBoard] = useState(new Array(16).fill(0));
     const [boardState, setBoardState] = useState(JSON.stringify(board));
     const [currScore, setCurrScore] = useState(0);
     const [bestScore, setBestScore] = useState(0);
+
+    // Variables to store Undo Stack & Redo Stack
+    const [undoStack, setUndoStack] = useState([]);
+    const redoStack = [];
 
     let updatedCurrScore = 0;
     let updatedBestScore = bestScore;
@@ -69,16 +73,29 @@ function Game() {
         const localBoard = window.localStorage.getItem('board');
         updatedCurrScore = parseInt(window.localStorage.getItem('2048currScore')) ? parseInt(window.localStorage.getItem('2048currScore')) : 0;
         updatedBestScore = parseInt(window.localStorage.getItem('2048bestScore')) ? parseInt(window.localStorage.getItem('2048bestScore')) : 0;
-        setCurrScore(updatedCurrScore);
-        setBestScore(updatedBestScore);
+        const localUndoStack = window.localStorage.getItem('undoStack');
 
-        // Convert String Back To Array Format
+        // Cleaning up localUndoStack ===> to proper Array of Array Format
+        const undoStackArray = localUndoStack ? localUndoStack.split(",") : [];
+        for(let i = 0; i < undoStackArray.length; i++) {
+            undoStackArray[i] = parseInt(undoStackArray[i]);
+        }
+        for(let i = 0; i < (undoStackArray.length/16); i++) {
+            undoStack.push(undoStackArray.slice((i*16), ((i+1)*16)));
+        }
+        if(undoStack.length) {
+            setUndoButtonActive(true);
+        }
+
+        // Convert localBoard String Back To Array Format
         const boardArray = localBoard ? localBoard.split(",") : [];
-
-        // Populating board Array with values before reolad
         for(let i = 0; i < boardArray.length; i++){
             board[i] = parseInt(boardArray[i]);
         }
+
+        // Setting Local Score Values
+        setCurrScore(updatedCurrScore);
+        setBestScore(updatedBestScore);
 
         setBoardState(JSON.stringify(board));
 
@@ -87,9 +104,27 @@ function Game() {
         }
         
         window.localStorage.setItem('board', board);
+        window.localStorage.setItem('undoStack', undoStack);
         document.addEventListener('keyup', handleMove);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
+
+    useEffect(() => {
+        if(undoClick) {
+            const lastBoardState = undoStack.pop();
+            for(let i = 0; i < lastBoardState.length; i++) {
+                board[i] = lastBoardState[i];
+            }
+            setBoardState(JSON.stringify(board));
+            window.localStorage.setItem('board', board);
+            window.localStorage.setItem('undoStack', undoStack);
+            setUndoClick(false);
+            if(!undoStack.length) {
+                
+                setUndoButtonActive(false);
+            }
+        }
+    },[undoClick])
 
     // ------------- Left & Right Arrow key functions --------------- //
     const rightMove = (board) => {
@@ -279,36 +314,48 @@ function Game() {
         let currBoard;
         switch(e.key) {
             case "ArrowRight":
+                undoStack.push([...board]);
                 rightMove(board);
                 combineRow(board);
                 rightMove(board);
                 currBoard = JSON.stringify(board);
                 if(prevBoard !== currBoard) generateSingleTwo();
                 window.localStorage.setItem('board', board);
+                setUndoButtonActive(true);
+                window.localStorage.setItem('undoStack', undoStack);
                 break;
             case "ArrowLeft":
+                undoStack.push([...board]);
                 leftMove(board);
                 combineRow(board);
                 leftMove(board);
                 currBoard = JSON.stringify(board);
                 if(prevBoard !== currBoard) generateSingleTwo();
                 window.localStorage.setItem('board', board);
+                setUndoButtonActive(true);
+                window.localStorage.setItem('undoStack', undoStack);
                 break;
             case "ArrowUp":
+                undoStack.push([...board]);
                 upMove(board);
                 combineColumn(board);
                 upMove(board);
                 currBoard = JSON.stringify(board);
                 if(prevBoard !== currBoard) generateSingleTwo();
                 window.localStorage.setItem('board', board);
+                setUndoButtonActive(true);
+                window.localStorage.setItem('undoStack', undoStack);
                 break;
             case "ArrowDown":
+                undoStack.push([...board]);
                 downMove(board);
                 combineColumn(board);
                 downMove(board);
                 currBoard = JSON.stringify(board);
                 if(prevBoard !== currBoard) generateSingleTwo();
                 window.localStorage.setItem('board', board);
+                setUndoButtonActive(true);
+                window.localStorage.setItem('undoStack', undoStack);
                 break;
             default:
                 break;
