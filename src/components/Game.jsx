@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import styled from 'styled-components';
 import GameBody from './GameBody';
 import GameHeader from './GameHeader';
+import { ResponsiveDisplayDiv } from "../utils/utils";
 
+//  ----------------------------------------------------------  //
 
-// ------------- Styled Components ----------------- //
-const ResponsiveDisplayDiv = styled.div`
-    width: 300px;
-    height: 353px;
-    background-color: #FCF9F0;
-    margin: auto;
-`;
 
 // Global Variable to store score and update it on each move || undo || redo - Creted outside the function due to a Chromium Bug
 // https://stackoverflow.com/questions/40732294/js-global-let-variable-not-updating-in-function

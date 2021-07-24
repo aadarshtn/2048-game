@@ -25,6 +25,13 @@ const StyledWrapperDiv = styled.div`
     margin-top: 36px;
 `;
 
+export const ResponsiveDisplayDiv = styled.div`
+    width: 300px;
+    height: 353px;
+    background-color: #FCF9F0;
+    margin: auto;
+`;
+
 export const ReplayButton = () => {
     return(
         <StyledSVGButton width="51" height="74" viewBox="0 0 51 74" fill="none" xmlns="http://www.w3.org/2000/svg">
