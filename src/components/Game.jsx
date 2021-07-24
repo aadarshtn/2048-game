@@ -11,6 +11,7 @@ import { ResponsiveDisplayDiv } from "../utils/utils";
 // TODO - Check for official fixes
 let updatedCurrScore = 0;
 let updatedBestScore = 0;
+let listenerActive = false;
 
 // ------------- Exported Component --------------- //
 function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoClick, setRedoButtonActive}) {
@@ -136,6 +137,7 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
         window.localStorage.setItem('board', board);
         window.localStorage.setItem('boardUndoStack', boardUndoStack);
         document.addEventListener('keyup', handleMove);
+        listenerActive = true;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
@@ -172,6 +174,9 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
             }
             if(boardRedoStack.length) {
                 setRedoButtonActive(true);
+            }
+            if(!listenerActive) {
+                document.addEventListener('keyup', handleMove);
             }
         }
     },[undoClick]);
@@ -334,6 +339,7 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
         for(let i = 0; i < 16; i++) {
             if(board[i] === 2048) {
                 document.removeEventListener('keyup', handleMove);
+                listenerActive = false;
                 return true;
             }
         }
@@ -386,6 +392,7 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
 
                         if(prevBoard === currBoard) {
                             document.removeEventListener('keyup', handleMove);
+                            listenerActive = false;
                             return true;
                         }
                     }
