@@ -12,6 +12,11 @@ const ResponsiveDisplayDiv = styled.div`
     margin: auto;
 `;
 
+// Global Variable to store score and update it on each move || undo || redo - Creted outside the function due to a Chromium Bug
+// https://stackoverflow.com/questions/40732294/js-global-let-variable-not-updating-in-function
+// TODO - Check for official fixes
+let updatedCurrScore = 0;
+let updatedBestScore = 0;
 
 // ------------- Exported Component --------------- //
 function Game({undoClick, setUndoClick, setUndoButtonActive}) {
@@ -23,11 +28,14 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
     const [bestScore, setBestScore] = useState(0);
 
     // Variables to store Undo Stack & Redo Stack
-    const [undoStack, setUndoStack] = useState([]);
+    // We need to kkep track of - BOARD && CURR_SCORE && BEST_SCORE
+    const [boardUndoStack, setBoardUndoStack] = useState([]);
+    const [currScoreUndoStack, setCurrScoreUndoStack] = useState([]);
+    const [bestScoreUndoStack, setBestScoreUndoStack] = useState([]);
+
     const redoStack = [];
 
-    let updatedCurrScore = 0;
-    let updatedBestScore = bestScore;
+    
 
     // Function to : Generate Number Two At One random positions
     const generateSingleTwo = () => {
@@ -68,22 +76,27 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
 
     // Initialise board with two two's --- Note: This code runs only once in a game life cycle
     useEffect(() => {
-
         // Retrieve the state before reload from localStorage --- String Format
         const localBoard = window.localStorage.getItem('board');
         updatedCurrScore = parseInt(window.localStorage.getItem('2048currScore')) ? parseInt(window.localStorage.getItem('2048currScore')) : 0;
         updatedBestScore = parseInt(window.localStorage.getItem('2048bestScore')) ? parseInt(window.localStorage.getItem('2048bestScore')) : 0;
-        const localUndoStack = window.localStorage.getItem('undoStack');
+        const localBoardUndoStack = window.localStorage.getItem('boardUndoStack');
+        const localCurrScoreUndoStack = window.localStorage.getItem('currScoreUndoStack');
+        const localBestScoreUndoStack = window.localStorage.getItem('bestScoreUndoStack');
 
-        // Cleaning up localUndoStack ===> to proper Array of Array Format
-        const undoStackArray = localUndoStack ? localUndoStack.split(",") : [];
-        for(let i = 0; i < undoStackArray.length; i++) {
-            undoStackArray[i] = parseInt(undoStackArray[i]);
+        // Cleaning up localUndoStack Values ===> to proper Format
+        const boardUndoStackArray = localBoardUndoStack ? localBoardUndoStack.split(",") : [];
+        const currScoreUndoStackArray = localCurrScoreUndoStack ? localCurrScoreUndoStack.split(",") : [];
+        const bestScoreUndoStackArray = localBestScoreUndoStack ? localBestScoreUndoStack.split(",") : [];
+        for(let i = 0; i < boardUndoStackArray.length; i++) {
+            boardUndoStackArray[i] = parseInt(boardUndoStackArray[i]);
         }
-        for(let i = 0; i < (undoStackArray.length/16); i++) {
-            undoStack.push(undoStackArray.slice((i*16), ((i+1)*16)));
+        for(let i = 0; i < (boardUndoStackArray.length/16); i++) {
+            boardUndoStack.push(boardUndoStackArray.slice((i*16), ((i+1)*16)));
+            currScoreUndoStack.push(parseInt(currScoreUndoStackArray[i]));
+            bestScoreUndoStack.push(parseInt(bestScoreUndoStackArray[i]));
         }
-        if(undoStack.length) {
+        if(boardUndoStack.length) {
             setUndoButtonActive(true);
         }
 
@@ -104,23 +117,32 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
         }
         
         window.localStorage.setItem('board', board);
-        window.localStorage.setItem('undoStack', undoStack);
+        window.localStorage.setItem('boardUndoStack', boardUndoStack);
         document.addEventListener('keyup', handleMove);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     },[]);
 
     useEffect(() => {
         if(undoClick) {
-            const lastBoardState = undoStack.pop();
+            const lastBoardState = boardUndoStack.pop();
+            const lastCurrScore = currScoreUndoStack.pop();
+            const lastBestScore = bestScoreUndoStack.pop();
+            updatedCurrScore = lastCurrScore;
+            updatedBestScore = lastBestScore;
             for(let i = 0; i < lastBoardState.length; i++) {
                 board[i] = lastBoardState[i];
             }
             setBoardState(JSON.stringify(board));
+            setCurrScore(lastCurrScore);
+            setBestScore(lastBestScore);
             window.localStorage.setItem('board', board);
-            window.localStorage.setItem('undoStack', undoStack);
+            window.localStorage.setItem('boardUndoStack', boardUndoStack);
+            window.localStorage.setItem('2048currScore', lastCurrScore);
+            window.localStorage.setItem('2048bestScore', lastBestScore);
+            window.localStorage.setItem('currScoreUndoStack', currScoreUndoStack);
+            window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
             setUndoClick(false);
-            if(!undoStack.length) {
-                
+            if(!boardUndoStack.length) {
                 setUndoButtonActive(false);
             }
         }
@@ -314,7 +336,9 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
         let currBoard;
         switch(e.key) {
             case "ArrowRight":
-                undoStack.push([...board]);
+                boardUndoStack.push([...board]);
+                currScoreUndoStack.push(updatedCurrScore);
+                bestScoreUndoStack.push(updatedBestScore);
                 rightMove(board);
                 combineRow(board);
                 rightMove(board);
@@ -322,10 +346,14 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
                 if(prevBoard !== currBoard) generateSingleTwo();
                 window.localStorage.setItem('board', board);
                 setUndoButtonActive(true);
-                window.localStorage.setItem('undoStack', undoStack);
+                window.localStorage.setItem('boardUndoStack', boardUndoStack);
+                window.localStorage.setItem('currScoreUndoStack', currScoreUndoStack);
+                window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
                 break;
             case "ArrowLeft":
-                undoStack.push([...board]);
+                boardUndoStack.push([...board]);
+                currScoreUndoStack.push(updatedCurrScore);
+                bestScoreUndoStack.push(updatedBestScore);
                 leftMove(board);
                 combineRow(board);
                 leftMove(board);
@@ -333,10 +361,14 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
                 if(prevBoard !== currBoard) generateSingleTwo();
                 window.localStorage.setItem('board', board);
                 setUndoButtonActive(true);
-                window.localStorage.setItem('undoStack', undoStack);
+                window.localStorage.setItem('boardUndoStack', boardUndoStack);
+                window.localStorage.setItem('currScoreUndoStack', currScoreUndoStack);
+                window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
                 break;
             case "ArrowUp":
-                undoStack.push([...board]);
+                boardUndoStack.push([...board]);
+                currScoreUndoStack.push(updatedCurrScore);
+                bestScoreUndoStack.push(updatedBestScore);
                 upMove(board);
                 combineColumn(board);
                 upMove(board);
@@ -344,10 +376,14 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
                 if(prevBoard !== currBoard) generateSingleTwo();
                 window.localStorage.setItem('board', board);
                 setUndoButtonActive(true);
-                window.localStorage.setItem('undoStack', undoStack);
+                window.localStorage.setItem('boardUndoStack', boardUndoStack);
+                window.localStorage.setItem('currScoreUndoStack', currScoreUndoStack);
+                window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
                 break;
             case "ArrowDown":
-                undoStack.push([...board]);
+                boardUndoStack.push([...board]);
+                currScoreUndoStack.push(updatedCurrScore);
+                bestScoreUndoStack.push(updatedBestScore);
                 downMove(board);
                 combineColumn(board);
                 downMove(board);
@@ -355,7 +391,9 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
                 if(prevBoard !== currBoard) generateSingleTwo();
                 window.localStorage.setItem('board', board);
                 setUndoButtonActive(true);
-                window.localStorage.setItem('undoStack', undoStack);
+                window.localStorage.setItem('boardUndoStack', boardUndoStack);
+                window.localStorage.setItem('currScoreUndoStack', currScoreUndoStack);
+                window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
                 break;
             default:
                 break;
