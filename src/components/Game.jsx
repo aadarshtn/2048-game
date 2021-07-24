@@ -12,9 +12,21 @@ import { ResponsiveDisplayDiv } from "../utils/utils";
 let updatedCurrScore = 0;
 let updatedBestScore = 0;
 let listenerActive = false;
+let replayTimerId;
 
 // ------------- Exported Component --------------- //
-function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoClick, setRedoButtonActive}) {
+function Game({
+    setStatus,
+    undoClick,
+    setUndoClick,
+    setUndoButtonActive,
+    redoClick,
+    setRedoClick,
+    setRedoButtonActive,
+    replayClick,
+    setReplayClick,
+    setReplayButtonActive
+}) {
 
     // States
     const [board, setBoard] = useState(new Array(16).fill(0));
@@ -31,6 +43,8 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
     const [boardRedoStack, setBoardRedoStack] = useState([]);
     const [currScoreRedoStack, setCurrScoreRedoStack] = useState([]);
     const [bestScoreRedoStack, setBestScoreRedoStack] = useState([]);
+
+    const [replayQueue, setReplayQueue] = useState([]);
 
     
 
@@ -95,6 +109,8 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
         }
         for(let i = 0; i < (boardUndoStackArray.length/16); i++) {
             boardUndoStack.push(boardUndoStackArray.slice((i*16), ((i+1)*16)));
+            // Adding same to replayQueue to handle replay;
+            replayQueue.push(boardUndoStackArray.slice((i*16), ((i+1)*16)));
             currScoreUndoStack.push(parseInt(currScoreUndoStackArray[i]));
             bestScoreUndoStack.push(parseInt(bestScoreUndoStackArray[i]));
         }
@@ -217,6 +233,28 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
         }
     },[redoClick]);
 
+    useEffect(() => {
+        let currentBoard = [...board];
+        if(replayClick) {
+            setReplayButtonActive(true);
+            replayQueue.push(currentBoard);
+            replayTimerId = setInterval(function() {
+                if(replayQueue.length === 1) {
+                    console.log(replayQueue.length)
+                    setReplayButtonActive(false);
+                    clearInterval(replayTimerId);
+                    setBoardState(JSON.stringify(currentBoard));
+                }
+                console.log("timer running")
+                setBoardState(JSON.stringify(replayQueue.shift()));
+            }, 2000);
+        } else {
+            setReplayButtonActive(false);
+            clearInterval(replayTimerId);
+            setBoardState(JSON.stringify(currentBoard));
+        }
+    },[replayClick])
+
     // ------------- Left & Right Arrow key functions --------------- //
     const rightMove = (board) => {
         for(let i = 0; i < 16; i++) {
@@ -337,9 +375,8 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
     // --------- Check Win & Check Lose Functions --------- //
     const checkWin = () => {
         for(let i = 0; i < 16; i++) {
-            if(board[i] === 2048) {
-                document.removeEventListener('keyup', handleMove);
-                listenerActive = false;
+            if(board[i] === 32) {
+                setStatus("YOU WON");
                 return true;
             }
         }
@@ -393,6 +430,7 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
                         if(prevBoard === currBoard) {
                             document.removeEventListener('keyup', handleMove);
                             listenerActive = false;
+                            setStatus("GAME OVER");
                             return true;
                         }
                     }
@@ -407,7 +445,9 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
         let currBoard;
         switch(e.key) {
             case "ArrowRight":
+                setStatus("IN_PROGRESS");
                 boardUndoStack.push([...board]);
+                replayQueue.push([...board]);
                 currScoreUndoStack.push(updatedCurrScore);
                 bestScoreUndoStack.push(updatedBestScore);
                 rightMove(board);
@@ -422,7 +462,9 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
                 window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
                 break;
             case "ArrowLeft":
+                setStatus("IN_PROGRESS");
                 boardUndoStack.push([...board]);
+                replayQueue.push([...board]);
                 currScoreUndoStack.push(updatedCurrScore);
                 bestScoreUndoStack.push(updatedBestScore);
                 leftMove(board);
@@ -437,7 +479,9 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
                 window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
                 break;
             case "ArrowUp":
+                setStatus("IN_PROGRESS");
                 boardUndoStack.push([...board]);
+                replayQueue.push([...board]);
                 currScoreUndoStack.push(updatedCurrScore);
                 bestScoreUndoStack.push(updatedBestScore);
                 upMove(board);
@@ -452,7 +496,9 @@ function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoC
                 window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
                 break;
             case "ArrowDown":
+                setStatus("IN_PROGRESS");
                 boardUndoStack.push([...board]);
+                replayQueue.push([...board]);
                 currScoreUndoStack.push(updatedCurrScore);
                 bestScoreUndoStack.push(updatedBestScore);
                 downMove(board);

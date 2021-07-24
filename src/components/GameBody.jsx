@@ -7,7 +7,7 @@ export default function GameBody({boardState}) {
     // available boardState = "[x,x,x,x,x,x,x,x,x,x,x,x]"
     // required Array Format = [x,x,x,x,x,x,x,x,x,x,x,x]
     // Creating an array out of string type board State
-    const boardArray = boardState.split(",");
+    const boardArray = boardState?.split(",");
 
     // Removing the first and last square brackets
     const firstChar = boardArray[0].substr(1, boardArray[0].length);
