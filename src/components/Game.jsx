@@ -19,7 +19,7 @@ let updatedCurrScore = 0;
 let updatedBestScore = 0;
 
 // ------------- Exported Component --------------- //
-function Game({undoClick, setUndoClick, setUndoButtonActive}) {
+function Game({undoClick, setUndoClick, setUndoButtonActive, redoClick, setRedoClick, setRedoButtonActive}) {
 
     // States
     const [board, setBoard] = useState(new Array(16).fill(0));
@@ -33,7 +33,9 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
     const [currScoreUndoStack, setCurrScoreUndoStack] = useState([]);
     const [bestScoreUndoStack, setBestScoreUndoStack] = useState([]);
 
-    const redoStack = [];
+    const [boardRedoStack, setBoardRedoStack] = useState([]);
+    const [currScoreRedoStack, setCurrScoreRedoStack] = useState([]);
+    const [bestScoreRedoStack, setBestScoreRedoStack] = useState([]);
 
     
 
@@ -80,9 +82,14 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
         const localBoard = window.localStorage.getItem('board');
         updatedCurrScore = parseInt(window.localStorage.getItem('2048currScore')) ? parseInt(window.localStorage.getItem('2048currScore')) : 0;
         updatedBestScore = parseInt(window.localStorage.getItem('2048bestScore')) ? parseInt(window.localStorage.getItem('2048bestScore')) : 0;
+        
         const localBoardUndoStack = window.localStorage.getItem('boardUndoStack');
         const localCurrScoreUndoStack = window.localStorage.getItem('currScoreUndoStack');
         const localBestScoreUndoStack = window.localStorage.getItem('bestScoreUndoStack');
+
+        const localBoardRedoStack = window.localStorage.getItem('boardRedoStack');
+        const localCurrScoreRedoStack = window.localStorage.getItem('currScoreRedoStack');
+        const localBestScoreRedoStack = window.localStorage.getItem('bestScoreRedoStack');
 
         // Cleaning up localUndoStack Values ===> to proper Format
         const boardUndoStackArray = localBoardUndoStack ? localBoardUndoStack.split(",") : [];
@@ -98,6 +105,22 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
         }
         if(boardUndoStack.length) {
             setUndoButtonActive(true);
+        }
+
+        // Cleaning up localRedoStack Values ===> to proper format
+        const boardRedoStackArray = localBoardRedoStack ? localBoardRedoStack.split(",") : [];
+        const currScoreRedoStackArray = localCurrScoreRedoStack ? localCurrScoreRedoStack.split(",") : [];
+        const bestScoreRedoStackArray = localBestScoreRedoStack ? localBestScoreRedoStack.split(",") : [];
+        for(let i = 0; i < boardRedoStackArray.length; i++) {
+            boardRedoStackArray[i] = parseInt(boardRedoStackArray[i]);
+        }
+        for(let i = 0; i < (boardRedoStackArray.length/16); i++) {
+            boardRedoStack.push(boardRedoStackArray.slice((i*16), ((i+1)*16)));
+            currScoreRedoStack.push(parseInt(currScoreRedoStackArray[i]));
+            bestScoreRedoStack.push(parseInt(bestScoreRedoStackArray[i]));
+        }
+        if(boardRedoStack.length) {
+            setRedoButtonActive(true);
         }
 
         // Convert localBoard String Back To Array Format
@@ -124,9 +147,51 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
 
     useEffect(() => {
         if(undoClick) {
+            // Populate the redo stacks
+            boardRedoStack.push([...board]);
+            currScoreRedoStack.push(updatedCurrScore);
+            bestScoreRedoStack.push(updatedBestScore);
+            
             const lastBoardState = boardUndoStack.pop();
             const lastCurrScore = currScoreUndoStack.pop();
             const lastBestScore = bestScoreUndoStack.pop();
+            updatedCurrScore = lastCurrScore;
+            updatedBestScore = lastBestScore;
+            for(let i = 0; i < lastBoardState.length; i++) {
+                board[i] = lastBoardState[i];
+            }
+            setBoardState(JSON.stringify(board));
+            setCurrScore(lastCurrScore);
+            setBestScore(lastBestScore);
+            window.localStorage.setItem('board', board);
+            window.localStorage.setItem('boardUndoStack', boardUndoStack);
+            window.localStorage.setItem('boardRedoStack', boardRedoStack);
+            window.localStorage.setItem('2048currScore', lastCurrScore);
+            window.localStorage.setItem('2048bestScore', lastBestScore);
+            window.localStorage.setItem('currScoreUndoStack', currScoreUndoStack);
+            window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
+            window.localStorage.setItem('currScoreRedoStack', currScoreRedoStack);
+            window.localStorage.setItem('bestScoreRedoStack', bestScoreRedoStack);
+            setUndoClick(false);
+            if(!boardUndoStack.length) {
+                setUndoButtonActive(false);
+            }
+            if(boardRedoStack.length) {
+                setRedoButtonActive(true);
+            }
+        }
+    },[undoClick]);
+
+    useEffect(() => {
+        if(redoClick) {
+            // Populate the redo stacks
+            boardUndoStack.push([...board]);
+            currScoreUndoStack.push(updatedCurrScore);
+            bestScoreUndoStack.push(updatedBestScore);
+            
+            const lastBoardState = boardRedoStack.pop();
+            const lastCurrScore = currScoreRedoStack.pop();
+            const lastBestScore = bestScoreRedoStack.pop();
             updatedCurrScore = lastCurrScore;
             updatedBestScore = lastBestScore;
             for(let i = 0; i < lastBoardState.length; i++) {
@@ -141,12 +206,17 @@ function Game({undoClick, setUndoClick, setUndoButtonActive}) {
             window.localStorage.setItem('2048bestScore', lastBestScore);
             window.localStorage.setItem('currScoreUndoStack', currScoreUndoStack);
             window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
-            setUndoClick(false);
-            if(!boardUndoStack.length) {
-                setUndoButtonActive(false);
+            window.localStorage.setItem('currScoreRedoStack', currScoreRedoStack);
+            window.localStorage.setItem('bestScoreRedoStack', bestScoreRedoStack);
+            setRedoClick(false);
+            if(!boardRedoStack.length) {
+                setRedoButtonActive(false);
+            }
+            if(boardUndoStack.length) {
+                setUndoButtonActive(true);
             }
         }
-    },[undoClick])
+    },[redoClick]);
 
     // ------------- Left & Right Arrow key functions --------------- //
     const rightMove = (board) => {

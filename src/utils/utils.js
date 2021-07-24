@@ -43,11 +43,13 @@ export const UndoButton = ({handleClick, active}) => {
     );
 }
 
-export const RedoButton = ({handleClick}) => {
+export const RedoButton = ({handleClick, active}) => {
     return(
-        <StyledSVGButton width="101" height="75" viewBox="0 0 101 75" fill="none" xmlns="http://www.w3.org/2000/svg" onClick={() => {handleClick()}}>
-            <path d="M65.9977 38.171C50.1929 38.171 35.1929 34.671 13.6929 68.171C21.6929 30.671 46.1929 22.671 65.9977 22.671L65.9977 7.98285L97.693 30.671L65.9977 52.6708L65.9977 38.171Z" fill="white"/>
-        </StyledSVGButton>
+        <StyledButton onClick={() => {handleClick()}} disabled={!active}>
+            <StyledSVGButton width="101" height="75" viewBox="0 0 101 75" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M65.9977 38.171C50.1929 38.171 35.1929 34.671 13.6929 68.171C21.6929 30.671 46.1929 22.671 65.9977 22.671L65.9977 7.98285L97.693 30.671L65.9977 52.6708L65.9977 38.171Z" fill={active ? "white" : "#969696"}/>
+            </StyledSVGButton>
+        </StyledButton>
     );
 }
 

@@ -11,10 +11,16 @@ import Game from './Game';
 export const GameBoard = () => {
 
     const [undoButtonClicked, setUndoButtonClicked] = useState(false);
+    const [redoButtonClicked, setRedoButtonClicked] = useState(false);
     const [undoButtonActive, setUndoButtonActive] = useState(false);
+    const [redoButtonActive, setRedoButtonActive] = useState(false);
 
     const handleUndoClick = () => {
         setUndoButtonClicked(true);
+    }
+
+    const handleRedoClick = () => {
+        setRedoButtonClicked(true);
     }
 
     return(
@@ -23,13 +29,16 @@ export const GameBoard = () => {
                 undoClick={undoButtonClicked}
                 setUndoClick={setUndoButtonClicked}
                 setUndoButtonActive={setUndoButtonActive}
+                redoClick={redoButtonClicked}
+                setRedoClick={setRedoButtonClicked}
+                setRedoButtonActive={setRedoButtonActive}
             />
             <ControlsWrapper
                 childrenArray={
                     [
                         <UndoButton key="undo" handleClick={handleUndoClick} active={undoButtonActive}/>,
                         <ReplayButton key="replay"/>,
-                        <RedoButton key="redo"/>
+                        <RedoButton key="redo" handleClick={handleRedoClick} active={redoButtonActive}/>
                     ]
                 }
             />
