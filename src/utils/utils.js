@@ -33,12 +33,13 @@ export const ResponsiveDisplayDiv = styled.div`
   margin: auto;
 `;
 
-export const StartButton = ({ handleClick, active }) => {
+export const StartButton = ({ handleClick, active, gameStatus }) => {
   return (
     <StyledButton
       onClick={() => {
         handleClick();
       }}
+      disabled={gameStatus === "NOT_STARTED"}
     >
       {active ? (
         <StyledSVGButton
@@ -58,7 +59,7 @@ export const StartButton = ({ handleClick, active }) => {
           fill='none'
           xmlns='http://www.w3.org/2000/svg'
         >
-          <path d='M51 37L0 73.3731L0 0.626934L51 37Z' fill='#FFF' />
+          <path d='M51 37L0 73.3731L0 0.626934L51 37Z' fill={gameStatus === "NOT_STARTED" ? '#969696' : 'white'}/>
         </StyledSVGButton>
       )}
     </StyledButton>

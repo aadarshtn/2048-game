@@ -10,7 +10,7 @@ import Game from './Game';
 
 export const GameBoard = () => {
 
-    const [status, setStatus] = useState("IN_PROGRESS");
+    const [status, setStatus] = useState("NOT_STARTED");
 
     const [undoButtonClicked, setUndoButtonClicked] = useState(false);
     const [redoButtonClicked, setRedoButtonClicked] = useState(false);
@@ -38,8 +38,9 @@ export const GameBoard = () => {
 
     return(
         <>
+            <button>RESET</button>
             <FlexBoxLayout
-                d={status === "IN_PROGRESS" ? "none" : ""} 
+                d={status === "IN_PROGRESS" || "NOT_STARTED" ? "none" : ""} 
                 p={"absolute"} 
                 l={"43vw"} 
                 t={"40vh"} 
@@ -67,7 +68,7 @@ export const GameBoard = () => {
                     childrenArray={
                         [
                             <UndoButton key="undo" handleClick={handleUndoClick} active={undoButtonActive}/>,
-                            <StartButton key="replay" handleClick={handleReplayClick} active={replayButtonActive}/>,
+                            <StartButton key="replay" handleClick={handleReplayClick} active={replayButtonActive} gameStatus={status}/>,
                             <RedoButton key="redo" handleClick={handleRedoClick} active={redoButtonActive}/>
                         ]
                     }
