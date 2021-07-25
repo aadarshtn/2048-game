@@ -38,7 +38,6 @@ export const GameBoard = () => {
 
     return(
         <>
-            <button>RESET</button>
             <FlexBoxLayout
                 d={status === "IN_PROGRESS" || "NOT_STARTED" ? "none" : ""} 
                 p={"absolute"} 

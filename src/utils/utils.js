@@ -4,7 +4,11 @@ import styled from 'styled-components';
 const StyledSVGButton = styled.svg``;
 
 const StyledButton = styled.button((props) => ({
-  backgroundColor: '#765F8B',
+  position: props.p || "",
+  zIndex: props.zi || "",
+  top: props.t || "",
+  right: props.r || "",
+  backgroundColor: props.bgColor || '#765F8B',
   border: 'none',
   '&:hover': {
     cursor: props.disabled ? '' : 'pointer',
@@ -32,6 +36,14 @@ export const ResponsiveDisplayDiv = styled.div`
   background-color: #fcf9f0;
   margin: auto;
 `;
+
+
+
+export const StyledResetButton = ({handleClick}) => {
+  return(
+    <StyledButton onClick={handleClick} p={"absolute"} zi={"1"} t={"5px"} r={"5px"} bgColor={"#FFF"}>RESET</StyledButton>
+  );
+}
 
 export const StartButton = ({ handleClick, active, gameStatus }) => {
   return (

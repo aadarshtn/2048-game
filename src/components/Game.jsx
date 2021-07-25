@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import GameBody from './GameBody';
 import GameHeader from './GameHeader';
-import { ResponsiveDisplayDiv } from "../utils/utils";
+import { ResponsiveDisplayDiv, StyledResetButton } from "../utils/utils";
 
 //  ----------------------------------------------------------  //
 
@@ -517,8 +517,39 @@ function Game({
         }
     }
 
+    const handleResetClick = () => {
+        for(let i = 0; i < 16; i++) {
+            board[i] = 0;
+        }
+        setBoardState(JSON.stringify(board));
+        generateDoubleTwo();
+        boardUndoStack.splice(0,boardUndoStack.length);
+        boardRedoStack.splice(0,boardRedoStack.length);
+        currScoreUndoStack.splice(0, currScoreUndoStack.length);
+        currScoreRedoStack.splice(0, currScoreRedoStack.length);
+        bestScoreUndoStack.splice(0, bestScoreUndoStack.length);
+        bestScoreRedoStack.splice(0, bestScoreRedoStack.length);
+        updatedCurrScore = 0;
+        updatedBestScore = 0;
+        setCurrScore(updatedCurrScore);
+        setBestScore(updatedBestScore);
+        setRedoButtonActive(false);
+        setUndoButtonActive(false);
+        setStatus("NOT_STARTED");
+        window.localStorage.setItem('board', board);
+        window.localStorage.setItem('boardUndoStack', boardUndoStack);
+        window.localStorage.setItem('boardRedoStack', boardRedoStack);
+        window.localStorage.setItem('2048currScore', updatedCurrScore);
+        window.localStorage.setItem('2048bestScore', updatedBestScore);
+        window.localStorage.setItem('currScoreUndoStack', currScoreUndoStack);
+        window.localStorage.setItem('bestScoreUndoStack', bestScoreUndoStack);
+        window.localStorage.setItem('currScoreRedoStack', currScoreRedoStack);
+        window.localStorage.setItem('bestScoreRedoStack', bestScoreRedoStack);
+    }
+
     return(
         <ResponsiveDisplayDiv>
+            <StyledResetButton handleClick={handleResetClick}/>
             <GameHeader currScore={currScore} bestScore={bestScore}/>
             <GameBody boardState={boardState}/>
         </ResponsiveDisplayDiv>
